@@ -1,8 +1,10 @@
 from flask import Flask, request
 import os, json
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 db_url = os.environ.get('DATABASE_URL') or "postgresql://localhost/notice"
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
