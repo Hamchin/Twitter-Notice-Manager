@@ -39,8 +39,8 @@ def get_notices():
     return data
 
 # 全ての通知を取得するエンドポイント
-@app.route('/collect', methods = ['GET'])
-def collect():
+@app.route('/get', methods = ['GET'])
+def get():
     notices = get_notices()
     res = json.dumps(notices, indent = 4)
     return res
@@ -66,5 +66,8 @@ def delete():
     notices = get_notices()
     db.session.query(Notice).delete()
     db.session.commit()
-    res = json.dumps(notices)
+    res = json.dumps(notices, indent = 4)
     return res
+
+if __name__ == "__main__":
+    app.run(host = '0.0.0.0', port = 8080, debug = True)
