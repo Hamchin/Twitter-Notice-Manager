@@ -33,21 +33,16 @@ def get_dict(notice):
     return data
 
 # 全ての通知を取得
+@app.route('/notices', methods = ['GET'])
 def get_notices():
     notices = db.session.query(Notice).all()
     data = [get_dict(notice) for notice in notices]
-    return data
-
-# 全ての通知を取得するエンドポイント
-@app.route('/get', methods = ['GET'])
-def get():
-    notices = get_notices()
-    res = json.dumps(notices, indent = 4)
+    res = json.dumps(data, indent = 4)
     return res
 
-# 通知を追加するエンドポイント
-@app.route('/add', methods = ['POST'])
-def add():
+# 単体の通知を追加
+@app.route('/notice', methods = ['POST'])
+def add_notice():
     req = request.get_json()
     notice = Notice()
     notice.receive_user = req['receive_user']
@@ -60,14 +55,29 @@ def add():
     res = json.dumps(data, indent = 4)
     return res
 
-# 全ての通知を削除するエンドポイント
-@app.route('/delete', methods = ['POST'])
-def delete():
-    notices = get_notices()
-    db.session.query(Notice).delete()
-    db.session.commit()
+# 複数の通知を追加
+@app.route('/notices', methods = ['POST'])
+def add_notices():
+    req = request.get_json()
+    notices = req['notices']
+    for data in notices:
+        notice = Notice()
+        notice.receive_user = data['receive_user']
+        notice.send_user = data['send_user']
+        notice.tweet_id = data['tweet_id']
+        notice.datetime = data['datetime']
+        db.session.add(notice)
+        db.session.commit()
+        data = get_dict(notice)
     res = json.dumps(notices, indent = 4)
     return res
+
+# 全ての通知を削除
+@app.route('/notices', methods = ['DELETE'])
+def delete_notices():
+    db.session.query(Notice).delete()
+    db.session.commit()
+    return ''
 
 if __name__ == "__main__":
     app.run(host = '0.0.0.0', port = 8080, debug = True)
