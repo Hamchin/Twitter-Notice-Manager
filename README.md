@@ -23,9 +23,9 @@ $ python3
 >>> from app import db
 >>> db.create_all()
 
-$ curl -X POST -H "Content-Type: application/json" -d '{"receive_user": "Taro", "send_user": "Hanako", "tweet_id": "0123456789", "datetime": "2020-01-01T00:00:00.000Z"}' http://0.0.0.0:8080/add
-$ curl http://0.0.0.0:8080/get
-$ curl -X POST http://0.0.0.0:8080/delete
+$ curl -X POST -H "Content-Type: application/json" -d '{"receive_user": "Taro", "send_user": "Hanako", "tweet_id": "0123456789", "datetime": "2020-01-01T00:00:00.000Z"}' http://0.0.0.0:8080/notice
+$ curl http://0.0.0.0:8080/notices
+$ curl -X DELETE http://0.0.0.0:8080/notices
 $ dropdb notice
 ```
 
