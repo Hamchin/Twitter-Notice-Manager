@@ -27,6 +27,7 @@ class Notice(db.Model):
 # データを辞書型として取得
 def get_dict(notice):
     data = {
+        'id': notice.id,
         'receive_user': notice.receive_user,
         'send_user': notice.send_user,
         'tweet_id': notice.tweet_id,
@@ -38,6 +39,14 @@ def get_dict(notice):
 def exist(notice):
     count = db.session.query(Notice).filter(Notice.receive_user == notice.receive_user, Notice.send_user == notice.send_user, Notice.tweet_id == notice.tweet_id).count()
     return count > 0
+
+# 全ての通知を取得
+@app.route('/notices', methods = ['GET'])
+def get_notices():
+    notices = db.session.query(Notice).all()
+    data = [get_dict(notice) for notice in notices]
+    res = json.dumps(data, indent = 4)
+    return res
 
 # 単体の通知を追加
 @app.route('/notice', methods = ['GET'])
@@ -51,14 +60,6 @@ def get_notice():
     db.session.add(notice)
     db.session.commit()
     data = get_dict(notice)
-    res = json.dumps(data, indent = 4)
-    return res
-
-# 全ての通知を取得
-@app.route('/notices', methods = ['GET'])
-def get_notices():
-    notices = db.session.query(Notice).all()
-    data = [get_dict(notice) for notice in notices]
     res = json.dumps(data, indent = 4)
     return res
 
@@ -101,6 +102,14 @@ def add_notices():
 @app.route('/notices', methods = ['DELETE'])
 def delete_notices():
     db.session.query(Notice).delete()
+    db.session.commit()
+    return ''
+
+# 対象IDの通知を削除
+@app.route('/notice', methods = ['DELETE'])
+def delete_notice():
+    req = request.get_json()
+    db.session.query(Notice).filter(Notice.id == req['id']).delete()
     db.session.commit()
     return ''
 
