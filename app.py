@@ -1,5 +1,5 @@
 from flask import Flask, request
-import os, json
+import os, json, datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
@@ -40,6 +40,17 @@ def exist(notice):
     count = db.session.query(Notice).filter(Notice.receive_user == notice.receive_user, Notice.send_user == notice.send_user, Notice.tweet_id == notice.tweet_id).count()
     return count > 0
 
+# 指定日数以前の通知ID取得
+def get_timeover_ids(day):
+    ids = []
+    notices = db.session.query(Notice).all()
+    standard = datetime.datetime.now()
+    for notice in notices:
+        date = datetime.datetime.strptime(notice.datetime, "%Y-%m-%dT%H:%M:%S.000Z")
+        date = date + datetime.timedelta(hours = 9)
+        if standard - datetime.timedelta(days = day) > date: ids.append(notice.id)
+    return ids
+
 # 全ての通知を取得
 @app.route('/notices', methods = ['GET'])
 def get_notices():
@@ -50,6 +61,10 @@ def get_notices():
     return res
 
 # 単体の通知を追加
+# receive_user: 通知の受信ユーザー
+# send_user: 通知の送信ユーザー
+# tweet_id: ツイートID
+# datetime: タイムスタンプ
 @app.route('/notice', methods = ['GET'])
 def get_notice():
     notice = Notice()
@@ -65,6 +80,10 @@ def get_notice():
     return res
 
 # 単体の通知を追加
+# receive_user: 通知の受信ユーザー
+# send_user: 通知の送信ユーザー
+# tweet_id: ツイートID
+# datetime: タイムスタンプ
 @app.route('/notice', methods = ['POST'])
 def add_notice():
     req = request.get_json()
@@ -81,6 +100,7 @@ def add_notice():
     return res
 
 # 複数の通知を追加
+# notices: 通知データの配列
 @app.route('/notices', methods = ['POST'])
 def add_notices():
     req = request.get_json()
@@ -99,14 +119,18 @@ def add_notices():
     res = json.dumps(results, indent = 4)
     return res
 
-# 全ての通知を削除
+# 指定日数以前の通知を全て削除
+# day: 指定日数
 @app.route('/notices', methods = ['DELETE'])
 def delete_notices():
-    db.session.query(Notice).delete()
+    req = request.get_json()
+    for ID in get_timeover_ids(req['day']):
+        db.session.query(Notice).filter(Notice.id == ID).delete()
     db.session.commit()
     return ''
 
 # 対象IDの通知を削除
+# id: 対象ID
 @app.route('/notice', methods = ['DELETE'])
 def delete_notice():
     req = request.get_json()
