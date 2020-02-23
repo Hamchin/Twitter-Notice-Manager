@@ -45,6 +45,7 @@ def exist(notice):
 def get_notices():
     notices = db.session.query(Notice).all()
     data = [get_dict(notice) for notice in notices]
+    data = sorted(data, key = lambda notice: notice['id'])
     res = json.dumps(data, indent = 4)
     return res
 
