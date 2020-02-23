@@ -34,6 +34,20 @@ def get_dict(notice):
     }
     return data
 
+# 単体の通知を追加
+@app.route('/notice', methods = ['GET'])
+def get_notice():
+    notice = Notice()
+    notice.receive_user = request.args.get('receive_user')
+    notice.send_user = request.args.get('send_user')
+    notice.tweet_id = request.args.get('tweet_id')
+    notice.datetime = request.args.get('datetime')
+    db.session.add(notice)
+    db.session.commit()
+    data = get_dict(notice)
+    res = json.dumps(data, indent = 4)
+    return res
+
 # 全ての通知を取得
 @app.route('/notices', methods = ['GET'])
 def get_notices():
