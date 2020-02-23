@@ -34,6 +34,11 @@ def get_dict(notice):
     }
     return data
 
+# データの存在チェック
+def exist(notice):
+    count = db.session.query(Notice).filter(Notice.receive_user == notice.receive_user, Notice.send_user == notice.send_user, Notice.tweet_id == notice.tweet_id).count()
+    return count > 0
+
 # 単体の通知を追加
 @app.route('/notice', methods = ['GET'])
 def get_notice():
@@ -42,6 +47,7 @@ def get_notice():
     notice.send_user = request.args.get('send_user')
     notice.tweet_id = request.args.get('tweet_id')
     notice.datetime = request.args.get('datetime')
+    if exist(notice): return ''
     db.session.add(notice)
     db.session.commit()
     data = get_dict(notice)
@@ -65,6 +71,7 @@ def add_notice():
     notice.send_user = req['send_user']
     notice.tweet_id = req['tweet_id']
     notice.datetime = req['datetime']
+    if exist(notice): return ''
     db.session.add(notice)
     db.session.commit()
     data = get_dict(notice)
@@ -76,16 +83,18 @@ def add_notice():
 def add_notices():
     req = request.get_json()
     notices = req['notices']
+    results = []
     for data in notices:
         notice = Notice()
         notice.receive_user = data['receive_user']
         notice.send_user = data['send_user']
         notice.tweet_id = data['tweet_id']
         notice.datetime = data['datetime']
+        if exist(notice): continue
         db.session.add(notice)
         db.session.commit()
-        data = get_dict(notice)
-    res = json.dumps(notices, indent = 4)
+        results.append(data)
+    res = json.dumps(results, indent = 4)
     return res
 
 # 全ての通知を削除
