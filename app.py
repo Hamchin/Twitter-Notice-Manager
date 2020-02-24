@@ -90,7 +90,7 @@ def get_timeover_ids(day):
 @app.route('/')
 def index():
     notices = get_notices(100)
-    return render_template('index.html', notices = notices)
+    return render_template('index.html', notices = reversed(notices))
 
 # 通知追加ルーティング
 @app.route('/notice', methods = ['POST'])
