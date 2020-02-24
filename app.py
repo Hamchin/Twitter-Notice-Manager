@@ -70,7 +70,7 @@ def add_notice(data):
 
 # 通知取得
 def get_notices(size):
-    notices = db.session.query(Notice).limit(size).all()
+    notices = db.session.query(Notice).order_by(Notice.id.desc()).limit(size).all()
     notices = [notice.get_dict() for notice in notices]
     notices = sorted(notices, key = lambda notice: notice['id'])
     return notices
