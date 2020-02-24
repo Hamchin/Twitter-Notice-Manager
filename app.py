@@ -37,7 +37,11 @@ def get_dict(notice):
 
 # データの存在チェック
 def exist(notice):
-    count = db.session.query(Notice).filter(Notice.receive_user == notice.receive_user, Notice.send_user == notice.send_user, Notice.tweet_id == notice.tweet_id).count()
+    count = db.session.query(Notice).filter(
+        Notice.receive_user == notice.receive_user,
+        Notice.send_user == notice.send_user,
+        Notice.tweet_id == notice.tweet_id
+    ).count()
     return count > 0
 
 # 指定日数以前の通知ID取得
