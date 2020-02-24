@@ -142,5 +142,17 @@ def delete_notice():
     db.session.commit()
     return ''
 
+@app.route('/update', methods = ['GET'])
+def update():
+    notices = db.session.query(Notice).all()
+    for notice in notices:
+        date = datetime.datetime.strptime(notice.datetime, "%Y-%m-%dT%H:%M:%S.000Z")
+        date = date + datetime.timedelta(hours = 9)
+        date = date.strftime("%Y-%m-%d %H:%M:%S")
+        new_notice = db.session.query(Notice).filter(Notice.id == notice.id).first()
+        new_notice.datetime = date
+        db.session.commit()
+    return ''
+
 if __name__ == "__main__":
     app.run(host = '0.0.0.0', port = 8080, debug = True)
