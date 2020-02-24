@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>NoticeDB</title>
+        <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <div style="margin: 30px;">
+            <form action="/notice" method="POST" style="width: 50%; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label>Receive User</label>
+                    <input type="text" class="form-control" name="receive_user">
+                </div>
+                <div class="form-group">
+                    <label>Send User</label>
+                    <input type="text" class="form-control" name="send_user">
+                </div>
+                <div class="form-group">
+                    <label>Tweet ID</label>
+                    <input type="text" class="form-control" name="tweet_id">
+                </div>
+                <div class="form-group">
+                    <label>Datetime</label>
+                    <input type="text" class="form-control" name="datetime">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <table class="table table-hover table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Receive User</th>
+                        <th>Send User</th>
+                        <th>Tweet ID</th>
+                        <th>Datetime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notice in notices %}
+                    <tr>
+                        <td>{{ notice['receive_user'] }}</td>
+                        <td>{{ notice['send_user'] }}</td>
+                        <td>{{ notice['tweet_id'] }}</td>
+                        <td>{{ notice['datetime'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
