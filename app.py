@@ -18,6 +18,8 @@ AT = os.environ['TWITTER_ACCESS_TOKEN']
 AS = os.environ['TWITTER_ACCESS_SECRET']
 twitter = OAuth1Session(CK, CS, AT, AS)
 
+ACCEPTED_IP = os.environ['ACCEPTED_IP']
+
 # 通知テーブル
 class Notice(db.Model):
     __tablename__ = 'notices'
@@ -40,6 +42,10 @@ class Notice(db.Model):
             'timestamp': self.timestamp
         }
         return data
+
+# IPチェック
+def accepted():
+    return request.access_route[0] == ACCEPTED_IP
 
 # タイムスタンプ取得
 def get_timestamp(date):
@@ -120,7 +126,6 @@ def index():
         notice['receiver'] = users[notice['receiver_id']]
         notice['sender'] = users[notice['sender_id']]
         notice['datetime'] = str(datetime.datetime.fromtimestamp(notice['timestamp']))
-    print(request.access_route)
     return render_template('index.html', notices = notices)
 
 # 通知取得API
@@ -129,7 +134,6 @@ def index():
 def api_get_notices():
     size = request.args.get('size', 10)
     notices = get_notices(size)
-    print(request.access_route)
     return json.dumps(notices, indent = 4)
 
 # 通知追加API
@@ -139,8 +143,8 @@ def api_get_notices():
 # datetime: タイムスタンプ
 @app.route('/notice/create', methods = ['GET'])
 def api_create_notice():
+    if not accepted(): return {}
     notice = add_notice(request.args)
-    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 # 通知追加API
@@ -150,21 +154,21 @@ def api_create_notice():
 # datetime: タイムスタンプ
 @app.route('/notice', methods = ['POST'])
 def api_post_notice():
+    if not accepted(): return {}
     notice = add_notice(request.get_json())
-    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 # 通知削除API
 # id: 対象ID
 @app.route('/notice', methods = ['DELETE'])
 def api_delete_notice():
+    if not accepted(): return {}
     req = request.get_json()
     data = db.session.query(Notice).filter(Notice.id == req['id']).first()
     if data is None: return {}
     notice = data.get_dict()
     db.session.delete(data)
     db.session.commit()
-    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 if __name__ == "__main__":
