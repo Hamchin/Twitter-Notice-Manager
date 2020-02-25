@@ -33,6 +33,11 @@ $ dropdb notice
 ## Deployment
 
 ```
+$ heroku create <YOUR APP>
+$ heroku config:set TWITTER_CONSUMER_KEY="<YOUR CONSUMER KEY>" --app <YOUR APP>
+$ heroku config:set TWITTER_CONSUMER_SECRET="<YOUR CONSUMER SECRET>" --app <YOUR APP>
+$ heroku config:set TWITTER_ACCESS_TOKEN="<YOUR ACCESS TOKEN>" --app <YOUR APP>
+$ heroku config:set TWITTER_ACCESS_SECRET="<YOUR ACCESS SECRET>" --app <YOUR APP>
 $ git push heroku master
 
 // Heroku Dashboard -> Resources -> Add-ons -> Heroku Postgres
