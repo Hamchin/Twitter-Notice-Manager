@@ -43,8 +43,9 @@ class Notice(db.Model):
 
 # タイムスタンプ取得
 def get_timestamp(date):
-    date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
-    date = date + datetime.timedelta(hours = 9)
+    #date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
+    #date = date + datetime.timedelta(hours = 9)
+    date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     timestamp = int(date.timestamp())
     return timestamp
 
