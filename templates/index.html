@@ -8,25 +8,6 @@
     </head>
     <body>
         <div style="margin: 30px;">
-            <form action="/notice" method="POST" style="width: 50%; margin-bottom: 30px;">
-                <div class="form-group">
-                    <label>Receive User</label>
-                    <input type="text" class="form-control" name="receive_user">
-                </div>
-                <div class="form-group">
-                    <label>Send User</label>
-                    <input type="text" class="form-control" name="send_user">
-                </div>
-                <div class="form-group">
-                    <label>Tweet ID</label>
-                    <input type="text" class="form-control" name="tweet_id">
-                </div>
-                <div class="form-group">
-                    <label>Datetime</label>
-                    <input type="text" class="form-control" name="datetime">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
             <table class="table table-hover table-bordered">
                 <thead class="thead-light">
                     <tr>
@@ -39,10 +20,10 @@
                 <tbody>
                     {% for notice in notices %}
                     <tr>
-                        <td>{{ notice['receive_user'] }}</td>
-                        <td>{{ notice['send_user'] }}</td>
+                        <td>{{ notice['receiver_id'] }}</td>
+                        <td>{{ notice['sender_id'] }}</td>
                         <td>{{ notice['tweet_id'] }}</td>
-                        <td>{{ notice['datetime'] }}</td>
+                        <td>{{ notice['timestamp'] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
