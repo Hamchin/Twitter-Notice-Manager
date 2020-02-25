@@ -137,8 +137,8 @@ def api_get_notices():
     return json.dumps(notices, indent = 4)
 
 # 通知追加API
-# receive_user: 通知の受信ユーザー
-# send_user: 通知の送信ユーザー
+# receiver: 通知の受信ユーザー
+# sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
 @app.route('/notice/create', methods = ['GET'])
@@ -148,8 +148,8 @@ def api_create_notice():
     return json.dumps(notice, indent = 4)
 
 # 通知追加API
-# receive_user: 通知の受信ユーザー
-# send_user: 通知の送信ユーザー
+# receiver: 通知の受信ユーザー
+# sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
 @app.route('/notice', methods = ['POST'])
