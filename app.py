@@ -100,13 +100,13 @@ def get_notices(size):
 # トップページ
 @app.route('/')
 def index():
-    notices = get_notices(100)
+    notices = get_notices(size = 100)
     return render_template('index.html', notices = notices)
 
 # 通知取得API
 # size: 通知取得数
 @app.route('/notices', methods = ['GET'])
-def get_notices():
+def api_get_notices():
     size = request.args.get('size', 10)
     notices = get_notices(size)
     return json.dumps(notices, indent = 4)
@@ -117,7 +117,7 @@ def get_notices():
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
 @app.route('/notice/create', methods = ['GET'])
-def create_notice():
+def api_create_notice():
     notice = add_notice(request.args)
     return json.dumps(notice, indent = 4)
 
@@ -127,14 +127,14 @@ def create_notice():
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
 @app.route('/notice', methods = ['POST'])
-def post_notice():
+def api_post_notice():
     notice = add_notice(request.get_json())
     return json.dumps(notice, indent = 4)
 
 # 通知削除API
 # id: 対象ID
 @app.route('/notice', methods = ['DELETE'])
-def delete_notice():
+def api_delete_notice():
     req = request.get_json()
     data = db.session.query(Notice).filter(Notice.id == req['id']).first()
     if data is None: return {}
