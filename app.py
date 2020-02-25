@@ -100,7 +100,7 @@ def get_notices(size):
 # トップページ
 @app.route('/')
 def index():
-    notices = get_notices(size = 100)
+    notices = get_notices(100)
     return render_template('index.html', notices = notices)
 
 # 通知取得API
