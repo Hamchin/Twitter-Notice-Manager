@@ -14,16 +14,16 @@
                         <th>Receive User</th>
                         <th>Send User</th>
                         <th>Tweet ID</th>
-                        <th>Timestamp</th>
+                        <th>Datetime</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for notice in notices %}
                     <tr>
-                        <td>{{ notice['receiver_id'] }}</td>
-                        <td>{{ notice['sender_id'] }}</td>
+                        <td>{{ notice['receiver'] }}</td>
+                        <td>{{ notice['sender'] }}</td>
                         <td>{{ notice['tweet_id'] }}</td>
-                        <td>{{ notice['timestamp'] }}</td>
+                        <td>{{ notice['datetime'] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

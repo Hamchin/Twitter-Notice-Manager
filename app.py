@@ -57,7 +57,7 @@ def exist(notice):
     ).count()
     return count > 0
 
-# ユーザーID取得
+# ユーザーネームからユーザー取得
 def get_user(name):
     url = "https://api.twitter.com/1.1/users/show.json"
     params = {
@@ -66,6 +66,17 @@ def get_user(name):
     }
     res = twitter.get(url, params = params, timeout = 10)
     if res.status_code != 200: return {}
+    return json.loads(res.text)
+
+# IDリストからユーザーリスト取得
+def get_users(user_ids):
+    url = "https://api.twitter.com/1.1/users/lookup.json"
+    params = {
+        'user_id': ','.join(user_ids),
+        'include_entities': False
+    }
+    res = twitter.get(url, params = params, timeout = 10)
+    if res.status_code != 200: return []
     return json.loads(res.text)
 
 # 通知追加
@@ -101,6 +112,14 @@ def get_notices(size):
 @app.route('/')
 def index():
     notices = get_notices(size = 100)
+    user_ids = [user_id for notice in notices for user_id in [notice['receiver_id'], notice['sender_id']]]
+    user_ids = list(set(user_ids))
+    users = get_users(user_ids)
+    users = {user['id_str']: user['screen_name'] for user in users}
+    for notice in notices:
+        notice['receiver'] = users[notice['receiver_id']]
+        notice['sender'] = users[notice['sender_id']]
+        notice['datetime'] = str(datetime.datetime.fromtimestamp(notice['timestamp']))
     return render_template('index.html', notices = notices)
 
 # 通知取得API
