@@ -120,7 +120,7 @@ def index():
         notice['receiver'] = users[notice['receiver_id']]
         notice['sender'] = users[notice['sender_id']]
         notice['datetime'] = str(datetime.datetime.fromtimestamp(notice['timestamp']))
-    print(request.remote_addr)
+    print(request.access_route)
     return render_template('index.html', notices = notices)
 
 # 通知取得API
@@ -129,7 +129,7 @@ def index():
 def api_get_notices():
     size = request.args.get('size', 10)
     notices = get_notices(size)
-    print(request.remote_addr)
+    print(request.access_route)
     return json.dumps(notices, indent = 4)
 
 # 通知追加API
@@ -140,7 +140,7 @@ def api_get_notices():
 @app.route('/notice/create', methods = ['GET'])
 def api_create_notice():
     notice = add_notice(request.args)
-    print(request.remote_addr)
+    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 # 通知追加API
@@ -151,7 +151,7 @@ def api_create_notice():
 @app.route('/notice', methods = ['POST'])
 def api_post_notice():
     notice = add_notice(request.get_json())
-    print(request.remote_addr)
+    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 # 通知削除API
@@ -164,7 +164,7 @@ def api_delete_notice():
     notice = data.get_dict()
     db.session.delete(data)
     db.session.commit()
-    print(request.remote_addr)
+    print(request.access_route)
     return json.dumps(notice, indent = 4)
 
 if __name__ == "__main__":
