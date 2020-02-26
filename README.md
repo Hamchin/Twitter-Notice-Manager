@@ -30,6 +30,7 @@ $ dropdb notice
 
 ```
 $ heroku create <YOUR APP>
+$ heroku config:set ACCEPTED_IP="<YOUR IP>" --app <YOUR APP>
 $ heroku config:set TWITTER_CONSUMER_KEY="<YOUR CONSUMER KEY>" --app <YOUR APP>
 $ heroku config:set TWITTER_CONSUMER_SECRET="<YOUR CONSUMER SECRET>" --app <YOUR APP>
 $ heroku config:set TWITTER_ACCESS_TOKEN="<YOUR ACCESS TOKEN>" --app <YOUR APP>
