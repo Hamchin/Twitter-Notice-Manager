@@ -1,5 +1,7 @@
 # NoticeDB
 
+https://notice-database.herokuapp.com
+
 ## Development
 
 ### Server 1
