@@ -18,7 +18,7 @@ AT = os.environ['TWITTER_ACCESS_TOKEN']
 AS = os.environ['TWITTER_ACCESS_SECRET']
 twitter = OAuth1Session(CK, CS, AT, AS)
 
-ACCEPTED_IP = os.environ['ACCEPTED_IP']
+PASSWORD = os.environ['PASSWORD']
 
 # 通知テーブル
 class Notice(db.Model):
@@ -42,10 +42,6 @@ class Notice(db.Model):
             'timestamp': self.timestamp
         }
         return data
-
-# IPチェック
-def accepted():
-    return request.access_route[0] == ACCEPTED_IP
 
 # タイムスタンプ取得
 def get_timestamp(date):
@@ -92,21 +88,21 @@ def add_notice(data):
     sender = data.get('sender')
     tweet_id = data.get('tweet_id')
     date = data.get('datetime')
-    if not (receiver and sender and tweet_id and date): return {}
+    if not (receiver and sender and tweet_id and date): return {'status': 'MISSING_PARAMS'}
     # ユーザーネームからユーザーID取得
     receiver_id = get_user(receiver).get('id_str')
     sender_id = get_user(sender).get('id_str')
-    if not (receiver_id and sender_id): return {}
+    if not (receiver_id and sender_id): return {'status': 'INVALID_USER'}
     # 通知作成 -> 通知追加
     notice = Notice()
     notice.receiver_id = receiver_id
     notice.sender_id = sender_id
     notice.tweet_id = tweet_id
     notice.timestamp = get_timestamp(date)
-    if exist(notice): return {}
+    if exist(notice): return {'status': 'DUPLICATE_NOTICE'}
     db.session.add(notice)
     db.session.commit()
-    return notice.get_dict()
+    return {'status': 'SUCCESS', 'notice': notice.get_dict()}
 
 # 通知取得
 def get_notices(size):
@@ -141,35 +137,41 @@ def api_get_notices():
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
+# password: パスワード
 @app.route('/notice/create', methods = ['GET'])
 def api_create_notice():
-    if not accepted(): return {}
-    notice = add_notice(request.args)
-    return json.dumps(notice, indent = 4)
+    req = request.args
+    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
+    res = add_notice(req)
+    return json.dumps(res, indent = 4)
 
 # 通知追加API
 # receiver: 通知の受信ユーザー
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # datetime: タイムスタンプ
+# password: パスワード
 @app.route('/notice', methods = ['POST'])
 def api_post_notice():
-    if not accepted(): return {}
-    notice = add_notice(request.get_json())
-    return json.dumps(notice, indent = 4)
+    req = request.get_json()
+    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
+    res = add_notice(req)
+    return json.dumps(res, indent = 4)
 
 # 通知削除API
 # id: 対象ID
+# password: パスワード
 @app.route('/notice', methods = ['DELETE'])
 def api_delete_notice():
-    if not accepted(): return {}
     req = request.get_json()
+    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
     data = db.session.query(Notice).filter(Notice.id == req['id']).first()
-    if data is None: return {}
+    if data is None: return {'status': 'NOT_EXIST_NOTICE'}
     notice = data.get_dict()
     db.session.delete(data)
     db.session.commit()
-    return json.dumps(notice, indent = 4)
+    res = {'status': 'SUCCESS', 'notice': notice}
+    return json.dumps(res, indent = 4)
 
 if __name__ == "__main__":
     app.run(host = '0.0.0.0', port = 8080, debug = True)
