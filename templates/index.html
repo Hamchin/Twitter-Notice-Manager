@@ -26,17 +26,17 @@
                 {% for notice in notices %}
                 <tr>
                     <td class="text-truncate">
-                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}">
+                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}" target="_blank">
                             {{ notice['receiver']['name'] }}
                         </a>
                     </td>
                     <td class="text-truncate">
-                        <a href="https://twitter.com/{{ notice['sender']['screen_name'] }}">
+                        <a href="https://twitter.com/{{ notice['sender']['screen_name'] }}" target="_blank">
                             {{ notice['sender']['name'] }}
                         </a>
                     </td>
                     <td class="text-truncate">
-                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}/status/{{ notice['tweet_id'] }}">
+                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}/status/{{ notice['tweet_id'] }}" target="_blank">
                             {{ notice['tweet_id'] }}
                         </a>
                     </td>
