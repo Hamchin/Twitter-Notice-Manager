@@ -7,7 +7,7 @@
     <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
-        a { text-decoration: none; }
+        a { text-decoration: none; color: inherit; }
     </style>
 </head>
 
@@ -26,21 +26,23 @@
                 {% for notice in notices %}
                 <tr>
                     <td class="text-truncate">
-                        <a href="https://twitter.com">
+                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}">
                             {{ notice['receiver']['name'] }}
                         </a>
                     </td>
                     <td class="text-truncate">
-                        <a href="https://twitter.com">
+                        <a href="https://twitter.com/{{ notice['sender']['screen_name'] }}">
                             {{ notice['sender']['name'] }}
                         </a>
                     </td>
                     <td class="text-truncate">
-                        <a href="https://twitter.com">
+                        <a href="https://twitter.com/{{ notice['receiver']['screen_name'] }}/status/{{ notice['tweet_id'] }}">
                             {{ notice['tweet_id'] }}
                         </a>
                     </td>
-                    <td class="text-truncate">{{ notice['datetime'] }}</td>
+                    <td class="text-truncate">
+                        {{ notice['datetime'] }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
