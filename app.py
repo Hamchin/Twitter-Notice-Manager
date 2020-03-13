@@ -117,11 +117,11 @@ def index():
     user_ids = [user_id for notice in notices for user_id in [notice['receiver_id'], notice['sender_id']]]
     user_ids = list(set(user_ids))
     users = get_users(user_ids)
-    users = {user['id_str']: user['screen_name'] for user in users}
+    users = {user['id_str']: {'name': user['name'], 'screen_name': user['screen_name']} for user in users}
     for notice in notices:
         notice['receiver'] = users[notice['receiver_id']]
         notice['sender'] = users[notice['sender_id']]
-        notice['datetime'] = str(datetime.datetime.fromtimestamp(notice['timestamp']))
+        notice['datetime'] = datetime.datetime.fromtimestamp(notice['timestamp']).strftime("%Y-%m-%d · %H:%M:%S")
     return render_template('index.html', notices = notices)
 
 # 通知取得API
