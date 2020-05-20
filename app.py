@@ -30,7 +30,7 @@ class Notice(db.Model):
     sender_id = db.Column(db.String(), nullable = False)
     # 通知対象のツイートID
     tweet_id = db.Column(db.String(), nullable = False)
-    # 通知時間
+    # タイムスタンプ
     timestamp = db.Column(db.Integer, nullable = False)
     # データを辞書型として取得
     def get_dict(self):
@@ -46,7 +46,6 @@ class Notice(db.Model):
 # タイムスタンプ取得
 def get_timestamp(date):
     date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
-    date = date + datetime.timedelta(hours = 9)
     timestamp = int(date.timestamp())
     return timestamp
 
@@ -122,7 +121,8 @@ def index():
     for notice in notices:
         notice['receiver'] = users.get(notice['receiver_id'], default_user)
         notice['sender'] = users.get(notice['sender_id'], default_user)
-        notice['datetime'] = datetime.datetime.fromtimestamp(notice['timestamp']).strftime("%Y-%m-%d · %H:%M:%S")
+        date = datetime.datetime.fromtimestamp(notice['timestamp']) + datetime.timedelta(hours = 9)
+        notice['datetime'] = date.strftime("%Y-%m-%d · %H:%M:%S")
     return render_template('index.html', notices = notices)
 
 # 通知取得API
@@ -137,7 +137,7 @@ def api_get_notices():
 # receiver: 通知の受信ユーザー
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
-# datetime: タイムスタンプ
+# datetime: 日付
 # password: パスワード
 @app.route('/notice/create', methods = ['GET'])
 def api_create_notice():
@@ -150,7 +150,7 @@ def api_create_notice():
 # receiver: 通知の受信ユーザー
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
-# datetime: タイムスタンプ
+# datetime: 日付
 # password: パスワード
 @app.route('/notice', methods = ['POST'])
 def api_post_notice():
