@@ -174,11 +174,5 @@ def api_delete_notice():
     res = {'status': 'SUCCESS', 'notice': notice}
     return json.dumps(res, indent = 4)
 
-def debug():
-    notices = db.session.query(Notice).all()
-    for notice in notices:
-        notice.timestamp = notice.timestamp - 32400
-    db.session.commit()
-
 if __name__ == "__main__":
     app.run(host = '0.0.0.0', port = 8080, debug = True)
