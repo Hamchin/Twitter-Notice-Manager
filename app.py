@@ -118,9 +118,10 @@ def index():
     user_ids = list(set(user_ids))
     users = get_users(user_ids)
     users = {user['id_str']: {'name': user['name'], 'screen_name': user['screen_name']} for user in users}
+    default_user = {'name': '', 'screen_name': ''}
     for notice in notices:
-        notice['receiver'] = users[notice['receiver_id']]
-        notice['sender'] = users[notice['sender_id']]
+        notice['receiver'] = users.get(notice['receiver_id'], default_user)
+        notice['sender'] = users.get(notice['sender_id'], default_user)
         notice['datetime'] = datetime.datetime.fromtimestamp(notice['timestamp']).strftime("%Y-%m-%d · %H:%M:%S")
     return render_template('index.html', notices = notices)
 
