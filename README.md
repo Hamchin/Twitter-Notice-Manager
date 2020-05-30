@@ -1,46 +1,39 @@
 # NoticeDB
 
-https://notice-database.herokuapp.com
+## API
+
+| URI | GET | POST |
+| - | :-: | :-: |
+| /notices | ○ | × |
+| /notice/create | ○ | ○ |
+| /notice/insert | ○ | ○ |
+| /notice/delete/:id | × | ○ |
 
 ## Development
 
-### Server 1
-
-```
-$ python3 app.py
-```
-
-### Server 2
-
-```
-$ postgres -D /usr/local/var/postgres
-```
-
-### Server 3
-
-```
-$ createdb notice
+```shell
+$ pip install -r requirements.txt
+$ vim environ.json
 $ python3
 
->>> from app import db
->>> db.create_all()
+>>> import app
+>>> app.create()
 
-$ dropdb notice
+$ python3 app.py
 ```
 
 ## Deployment
 
-```
-$ heroku create
-$ heroku config:set ACCEPTED_IP="<YOUR IP>"
-$ heroku config:set TWITTER_CONSUMER_KEY="<YOUR CONSUMER KEY>"
-$ heroku config:set TWITTER_CONSUMER_SECRET="<YOUR CONSUMER SECRET>"
-$ heroku config:set TWITTER_ACCESS_TOKEN="<YOUR ACCESS TOKEN>"
-$ heroku config:set TWITTER_ACCESS_SECRET="<YOUR ACCESS SECRET>"
-$ heroku addons:create heroku-postgresql:hobby-dev
-$ git push heroku master
-$ heroku run python
+```shell
+# Create and Start
+$ docker-compose up -d
 
->>> from app import db
->>> db.create_all()
+# Stop
+$ docker-compose stop
+
+# Start
+$ docker-compose start
+
+# Remove
+$ docker-compose down (--rmi all)
 ```
