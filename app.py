@@ -1,62 +1,77 @@
+import sqlite3, os, json, datetime
 from flask import Flask, request, render_template
-import os, json, datetime
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from requests_oauthlib import OAuth1Session
 
 app = Flask(__name__)
 CORS(app)
 
-db_url = os.environ.get('DATABASE_URL') or "postgresql://localhost/notice"
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+DATABASE_PATH = './notice.db'
 
-CK = os.environ['TWITTER_CONSUMER_KEY']
-CS = os.environ['TWITTER_CONSUMER_SECRET']
-AT = os.environ['TWITTER_ACCESS_TOKEN']
-AS = os.environ['TWITTER_ACCESS_SECRET']
+# 環境変数
+# {
+#     "TWITTER_CONSUMER_KEY": "",
+#     "TWITTER_CONSUMER_SECRET": "",
+#     "TWITTER_ACCESS_TOKEN": "",
+#     "TWITTER_ACCESS_SECRET": ""
+# }
+ENVIRON_PATH = './environ.json'
+ENVIRON = json.load(open(ENVIRON_PATH))
+
+CK = ENVIRON['TWITTER_CONSUMER_KEY']
+CS = ENVIRON['TWITTER_CONSUMER_SECRET']
+AT = ENVIRON['TWITTER_ACCESS_TOKEN']
+AS = ENVIRON['TWITTER_ACCESS_SECRET']
 twitter = OAuth1Session(CK, CS, AT, AS)
 
-PASSWORD = os.environ['PASSWORD']
+# 通知データ
+class Notice():
+    def __init__(self, receiver_id, sender_id, tweet_id, timestamp):
+        self.receiver_id = receiver_id
+        self.sender_id = sender_id
+        self.tweet_id = tweet_id
+        self.timestamp = timestamp
 
-# 通知テーブル
-class Notice(db.Model):
-    __tablename__ = 'notices'
-    id = db.Column(db.Integer, primary_key = True)
-    # 通知を受けたユーザー
-    receiver_id = db.Column(db.String(), nullable = False)
-    # 通知を送ったユーザー
-    sender_id = db.Column(db.String(), nullable = False)
-    # 通知対象のツイートID
-    tweet_id = db.Column(db.String(), nullable = False)
-    # タイムスタンプ
-    timestamp = db.Column(db.Integer, nullable = False)
-    # データを辞書型として取得
-    def get_dict(self):
-        data = {
-            'id': self.id,
-            'receiver_id': self.receiver_id,
-            'sender_id': self.sender_id,
-            'tweet_id': self.tweet_id,
-            'timestamp': self.timestamp
-        }
-        return data
+# データベース操作用デコレーター
+def database(func):
+    def wrapper(*args, **kwargs):
+        # データベース接続
+        connection = sqlite3.connect(DATABASE_PATH)
+        connection.row_factory = sqlite3.Row
+        # カーソル作成
+        cursor = connection.cursor()
+        # 処理の実行
+        kwargs['cursor'] = cursor
+        res = func(*args, **kwargs)
+        # データベースの保存
+        connection.commit()
+        # データベースの接続を閉じる
+        connection.close()
+        return res
+    return wrapper
+
+# テーブル作成
+@database
+def create(cursor = None):
+    # receiver_id : 通知を受けたユーザーID
+    # sender_id : 通知を送ったユーザーID
+    # tweet_id : 通知対象のツイートID
+    # timestamp : タイムスタンプ
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS notices (
+        id INTEGER PRIMARY KEY,
+        receiver_id TEXT,
+        sender_id TEXT,
+        tweet_id TEXT,
+        timestamp INTEGER
+    )
+    """)
 
 # タイムスタンプ取得
 def get_timestamp(date):
     date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
     timestamp = int(date.timestamp())
     return timestamp
-
-# 重複チェック
-def exist(notice):
-    count = db.session.query(Notice).filter(
-        Notice.receiver_id == notice.receiver_id,
-        Notice.sender_id == notice.sender_id,
-        Notice.tweet_id == notice.tweet_id
-    ).count()
-    return count > 0
 
 # ユーザーネームからユーザー取得
 def get_user(name):
@@ -80,40 +95,46 @@ def get_users(user_ids):
     if res.status_code != 200: return []
     return json.loads(res.text)
 
-# 通知追加
-def add_notice(data):
-    # パラメータ読み込み
-    receiver = data.get('receiver')
-    sender = data.get('sender')
-    tweet_id = data.get('tweet_id')
-    date = data.get('datetime')
-    if not (receiver and sender and tweet_id and date): return {'status': 'MISSING_PARAMS'}
-    # ユーザーネームからユーザーID取得
-    receiver_id = get_user(receiver).get('id_str')
-    sender_id = get_user(sender).get('id_str')
-    if not (receiver_id and sender_id): return {'status': 'INVALID_USER'}
-    # 通知作成 -> 通知追加
-    notice = Notice()
-    notice.receiver_id = receiver_id
-    notice.sender_id = sender_id
-    notice.tweet_id = tweet_id
-    notice.timestamp = get_timestamp(date)
-    if exist(notice): return {'status': 'DUPLICATE_NOTICE'}
-    db.session.add(notice)
-    db.session.commit()
-    return {'status': 'SUCCESS', 'notice': notice.get_dict()}
+# 重複チェック
+@database
+def duplicate(notice, cursor = None):
+    sql = "SELECT * FROM notices WHERE receiver_id = ? AND sender_id = ? AND tweet_id = ?"
+    cursor.execute(sql, (notice.receiver_id, notice.sender_id, notice.tweet_id))
+    notices = [dict(notice) for notice in cursor.fetchall()]
+    return len(notices) > 0
 
-# 通知取得
-def get_notices(size):
-    notices = db.session.query(Notice).order_by(Notice.timestamp.desc()).limit(size).all()
-    notices = [notice.get_dict() for notice in notices]
+# 複数の通知取得
+@database
+def get_notices(size, cursor = None):
+    cursor.execute("SELECT * FROM notices ORDER BY timestamp DESC LIMIT ?", (size,))
+    notices = [dict(notice) for notice in cursor.fetchall()]
     return notices
+
+# 単体の通知取得
+@database
+def get_notice(id, cursor = None):
+    cursor.execute("SELECT * FROM notices WHERE id = ?", (id,))
+    data = cursor.fetchone()
+    if data is None: return None
+    notice = dict(data)
+    return notice
+
+# 単体の通知挿入
+@database
+def insert_notice(notice, cursor = None):
+    sql = "INSERT INTO notices (receiver_id, sender_id, tweet_id, timestamp) VALUES (?, ?, ?, ?)"
+    cursor.execute(sql, (notice.receiver_id, notice.sender_id, notice.tweet_id, notice.timestamp))
+
+# 単体の通知削除
+@database
+def delete_notice(id, cursor = None):
+    cursor.execute("DELETE FROM notices WHERE id = ?", (id,))
 
 # トップページ
 @app.route('/')
 def index():
     notices = get_notices(size = 100)
-    user_ids = [user_id for notice in notices for user_id in [notice['receiver_id'], notice['sender_id']]]
+    user_ids = [notice['receiver_id'] for notice in notices] + [notice['sender_id'] for notice in notices]
     user_ids = list(set(user_ids))
     users = get_users(user_ids)
     users = {user['id_str']: {'name': user['name'], 'screen_name': user['screen_name']} for user in users}
@@ -138,41 +159,69 @@ def api_get_notices():
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # datetime: 日付
-# password: パスワード
-@app.route('/notice/create', methods = ['GET'])
+@app.route('/notice/create', methods = ['GET', 'POST'])
 def api_create_notice():
-    req = request.args
-    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
-    res = add_notice(req)
+    data = request.get_json() if request.method == 'POST' else request.args
+    # パラメータ読み込み
+    receiver = data.get('receiver')
+    sender = data.get('sender')
+    tweet_id = data.get('tweet_id')
+    date = data.get('datetime')
+    if not (receiver and sender and tweet_id and date):
+        res = {'status': 'MISSING_PARAMS'}
+        return json.dumps(res, indent = 4)
+    # ユーザーネームからユーザーID取得
+    receiver_id = get_user(receiver).get('id_str')
+    sender_id = get_user(sender).get('id_str')
+    if not (receiver_id and sender_id):
+        res = {'status': 'INVALID_USER'}
+        return json.dumps(res, indent = 4)
+    # 通知追加
+    timestamp = get_timestamp(date)
+    notice = Notice(receiver_id, sender_id, tweet_id, timestamp)
+    if duplicate(notice):
+        res = {'status': 'DUPLICATE_NOTICE'}
+        return json.dumps(res, indent = 4)
+    insert_notice(notice)
+    res = {'status': 'SUCCESS'}
     return json.dumps(res, indent = 4)
 
-# 通知追加API
-# receiver: 通知の受信ユーザー
-# sender: 通知の送信ユーザー
+# 通知挿入API
+# receiver_id: 通知の受信ユーザーID
+# sender_id: 通知の送信ユーザーID
 # tweet_id: ツイートID
-# datetime: 日付
-# password: パスワード
-@app.route('/notice', methods = ['POST'])
-def api_post_notice():
-    req = request.get_json()
-    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
-    res = add_notice(req)
+# timestamp: タイムスタンプ
+@app.route('/notice/insert', methods = ['GET', 'POST'])
+def api_insert_notice():
+    data = request.get_json() if request.method == 'POST' else request.args
+    # パラメータ読み込み
+    receiver_id = data.get('receiver_id')
+    sender_id = data.get('sender_id')
+    tweet_id = data.get('tweet_id')
+    timestamp = data.get('timestamp')
+    if not (receiver_id and sender_id and tweet_id and timestamp):
+        res = {'status': 'MISSING_PARAMS'}
+        return json.dumps(res, indent = 4)
+    # 通知追加
+    notice = Notice(receiver_id, sender_id, tweet_id, timestamp)
+    if duplicate(notice):
+        res = {'status': 'DUPLICATE_NOTICE'}
+        return json.dumps(res, indent = 4)
+    insert_notice(notice)
+    res = {'status': 'SUCCESS'}
     return json.dumps(res, indent = 4)
 
 # 通知削除API
 # id: 対象ID
-# password: パスワード
-@app.route('/notice', methods = ['DELETE'])
-def api_delete_notice():
-    req = request.get_json()
-    if req.get('password') != PASSWORD: return {'status': 'NOT_ACCEPTED'}
-    data = db.session.query(Notice).filter(Notice.id == req['id']).first()
-    if data is None: return {'status': 'NOT_EXIST_NOTICE'}
-    notice = data.get_dict()
-    db.session.delete(data)
-    db.session.commit()
-    res = {'status': 'SUCCESS', 'notice': notice}
+@app.route('/notice/delete/<id>', methods = ['POST'])
+def api_delete_notice(id):
+    notice = get_notice(id)
+    if notice is None:
+        res = {'status': 'NOT_EXIST_NOTICE'}
+        return json.dumps(res, indent = 4)
+    delete_notice(id)
+    res = {'status': 'SUCCESS'}
     return json.dumps(res, indent = 4)
 
 if __name__ == "__main__":
-    app.run(host = '0.0.0.0', port = 8080, debug = True)
+    app.run(host = '0.0.0.0', port = 8000, debug = True)

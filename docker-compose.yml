@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+    app:
+        build: .
+        ports:
+            - 8000:80
+        volumes:
+            - .:/app
+        environment:
+            TZ: Asia/Tokyo

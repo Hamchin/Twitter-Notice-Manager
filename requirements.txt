@@ -1,6 +1,4 @@
 flask
-flask_sqlalchemy
 flask-cors
-psycopg2
 requests_oauthlib
 gunicorn
