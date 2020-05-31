@@ -3,7 +3,7 @@ services:
     app:
         build: .
         ports:
-            - 8000:80
+            - 2000:80
         volumes:
             - .:/app
         environment:
