@@ -106,7 +106,10 @@ def duplicate(notice, cursor = None):
 # 複数の通知取得
 @database
 def get_notices(size, cursor = None):
-    cursor.execute("SELECT * FROM notices ORDER BY timestamp DESC LIMIT ?", (size,))
+    if size == 0:
+        cursor.execute("SELECT * FROM notices ORDER BY timestamp DESC")
+    else:
+        cursor.execute("SELECT * FROM notices ORDER BY timestamp DESC LIMIT ?", (size,))
     notices = [dict(notice) for notice in cursor.fetchall()]
     return notices
 
@@ -150,7 +153,7 @@ def index():
 # size: 通知取得数
 @app.route('/notices', methods = ['GET'])
 def api_get_notices():
-    size = request.args.get('size', 10)
+    size = request.args.get('size', 10, type = int)
     notices = get_notices(size)
     return json.dumps(notices, indent = 4)
 
