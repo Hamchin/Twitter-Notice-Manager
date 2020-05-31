@@ -67,12 +67,6 @@ def create(cursor = None):
     )
     """)
 
-# タイムスタンプ取得
-def get_timestamp(date):
-    date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.000Z")
-    timestamp = int(date.timestamp())
-    return timestamp
-
 # ユーザーネームからユーザー取得
 def get_user(name):
     url = "https://api.twitter.com/1.1/users/show.json"
@@ -145,7 +139,7 @@ def index():
     for notice in notices:
         notice['receiver'] = users.get(notice['receiver_id'], default_user)
         notice['sender'] = users.get(notice['sender_id'], default_user)
-        date = datetime.datetime.fromtimestamp(notice['timestamp']) + datetime.timedelta(hours = 9)
+        date = datetime.datetime.fromtimestamp(notice['timestamp'])
         notice['datetime'] = date.strftime("%Y-%m-%d · %H:%M:%S")
     return render_template('index.html', notices = notices)
 
@@ -161,7 +155,7 @@ def api_get_notices():
 # receiver: 通知の受信ユーザー
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
-# datetime: 日付
+# timestamp: タイムスタンプ
 @app.route('/notice/create', methods = ['GET', 'POST'])
 def api_create_notice():
     data = request.get_json() if request.method == 'POST' else request.args
@@ -169,8 +163,8 @@ def api_create_notice():
     receiver = data.get('receiver')
     sender = data.get('sender')
     tweet_id = data.get('tweet_id')
-    date = data.get('datetime')
-    if not (receiver and sender and tweet_id and date):
+    timestamp = data.get('timestamp')
+    if not (receiver and sender and tweet_id and timestamp):
         res = {'status': 'MISSING_PARAMS'}
         return json.dumps(res, indent = 4)
     # ユーザーネームからユーザーID取得
@@ -180,7 +174,6 @@ def api_create_notice():
         res = {'status': 'INVALID_USER'}
         return json.dumps(res, indent = 4)
     # 通知追加
-    timestamp = get_timestamp(date)
     notice = Notice(receiver_id, sender_id, tweet_id, timestamp)
     if duplicate(notice):
         res = {'status': 'DUPLICATE_NOTICE'}
