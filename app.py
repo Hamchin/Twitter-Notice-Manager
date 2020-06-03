@@ -156,9 +156,9 @@ def api_get_notices():
 # sender: 通知の送信ユーザー
 # tweet_id: ツイートID
 # timestamp: タイムスタンプ
-@app.route('/notice/create', methods = ['GET', 'POST'])
+@app.route('/notice/create', methods = ['POST'])
 def api_create_notice():
-    data = request.get_json() if request.method == 'POST' else request.args
+    data = request.get_json()
     # パラメータ読み込み
     receiver = data.get('receiver')
     sender = data.get('sender')
@@ -187,9 +187,9 @@ def api_create_notice():
 # sender_id: 通知の送信ユーザーID
 # tweet_id: ツイートID
 # timestamp: タイムスタンプ
-@app.route('/notice/insert', methods = ['GET', 'POST'])
+@app.route('/notice/insert', methods = ['POST'])
 def api_insert_notice():
-    data = request.get_json() if request.method == 'POST' else request.args
+    data = request.get_json()
     # パラメータ読み込み
     receiver_id = data.get('receiver_id')
     sender_id = data.get('sender_id')

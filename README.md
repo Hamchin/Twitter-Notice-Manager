@@ -5,8 +5,8 @@
 | URI | GET | POST |
 | - | :-: | :-: |
 | /notices | ○ | × |
-| /notice/create | ○ | ○ |
-| /notice/insert | ○ | ○ |
+| /notice/create | × | ○ |
+| /notice/insert | × | ○ |
 | /notice/delete/:id | × | ○ |
 
 ## Development
