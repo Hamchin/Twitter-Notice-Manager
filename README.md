@@ -1,5 +1,7 @@
 # NoticeDB
 
+Service for managing liked notifications in Twitter.
+
 ## API
 
 | URI | GET | POST |
@@ -13,12 +15,8 @@
 
 ```shell
 $ pip install -r requirements.txt
-$ vim environ.json
-$ python3
-
->>> import app
->>> app.create()
-
+$ cp .env.example .env
+$ $EDITOR .env
 $ python3 app.py
 ```
 

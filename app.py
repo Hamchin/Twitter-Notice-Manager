@@ -2,26 +2,18 @@ import sqlite3, os, json, datetime
 from flask import Flask, request, render_template
 from flask_cors import CORS
 from requests_oauthlib import OAuth1Session
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
 DATABASE_PATH = './notice.db'
+load_dotenv()
 
-# 環境変数
-# {
-#     "TWITTER_CONSUMER_KEY": "",
-#     "TWITTER_CONSUMER_SECRET": "",
-#     "TWITTER_ACCESS_TOKEN": "",
-#     "TWITTER_ACCESS_SECRET": ""
-# }
-ENVIRON_PATH = './environ.json'
-ENVIRON = json.load(open(ENVIRON_PATH))
-
-CK = ENVIRON['TWITTER_CONSUMER_KEY']
-CS = ENVIRON['TWITTER_CONSUMER_SECRET']
-AT = ENVIRON['TWITTER_ACCESS_TOKEN']
-AS = ENVIRON['TWITTER_ACCESS_SECRET']
+CK = os.getenv('TWITTER_CONSUMER_KEY')
+CS = os.getenv('TWITTER_CONSUMER_SECRET')
+AT = os.getenv('TWITTER_ACCESS_TOKEN')
+AS = os.getenv('TWITTER_ACCESS_SECRET')
 twitter = OAuth1Session(CK, CS, AT, AS)
 
 # 通知データ
@@ -220,4 +212,5 @@ def api_delete_notice(id):
     return json.dumps(res, indent = 4)
 
 if __name__ == "__main__":
+    create()
     app.run(host = '0.0.0.0', port = 8000, debug = True)

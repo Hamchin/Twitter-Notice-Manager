@@ -1,4 +1,5 @@
 flask
 flask-cors
 requests_oauthlib
+python-dotenv
 gunicorn
