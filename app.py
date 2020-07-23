@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 CORS(app)
 
-DATABASE_PATH = './notice.db'
-BACKUP_PATH = './backup.db'
+DATABASE_PATH = './data/notice.db'
+BACKUP_PATH = './data/backup.db'
 load_dotenv()
 
 CK = os.getenv('TWITTER_CONSUMER_KEY')
