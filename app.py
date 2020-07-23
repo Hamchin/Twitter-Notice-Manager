@@ -8,6 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 DATABASE_PATH = './notice.db'
+BACKUP_PATH = './backup.db'
 load_dotenv()
 
 CK = os.getenv('TWITTER_CONSUMER_KEY')
@@ -24,6 +25,19 @@ class Notice():
         self.tweet_id = tweet_id
         self.timestamp = timestamp
 
+# バックアップ (1回/日)
+def backup(connection):
+    now_date = datetime.datetime.now()
+    backup_timestamp = os.path.getctime(DATABASE_PATH) if os.path.exists(BACKUP_PATH) else 0
+    backup_date = datetime.datetime.fromtimestamp(backup_timestamp)
+    is_same_year = now_date.year == backup_date.year
+    is_same_month = now_date.month == backup_date.month
+    is_same_day = now_date.day == backup_date.day
+    if is_same_year and is_same_month and is_same_day: return
+    backup_connection = sqlite3.connect(BACKUP_PATH)
+    connection.backup(backup_connection)
+    backup_connection.close()
+
 # データベース操作用デコレーター
 def database(func):
     def wrapper(*args, **kwargs):
@@ -37,6 +51,8 @@ def database(func):
         res = func(*args, **kwargs)
         # データベースの保存
         connection.commit()
+        # バックアップ
+        backup(connection)
         # データベースの接続を閉じる
         connection.close()
         return res
