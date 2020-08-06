@@ -1,6 +1,6 @@
-# NoticeDB
+# Twitter-Notice-Manager
 
-Service for managing liked notifications in Twitter.
+Service for managing notifications in Twitter.
 
 ## API
 
