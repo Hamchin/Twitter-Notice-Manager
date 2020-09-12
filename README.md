@@ -1,14 +1,16 @@
 # Twitter-Notice-Manager
 
+https://hamchin.github.io/Twitter-Notice-Manager
+
 Service for managing notifications on Twitter.
 
 ## API
 
 | Method | Endpoint | Description |
 | - | - | - |
-| GET | /notices | Get multiple notifications |
-| POST | /notice/update | Update one notification |
-| POST | /notice/delete | Delete one notification |
+| GET | /notices | Get multiple notifications. |
+| POST | /notice/update | Update one notification. |
+| POST | /notice/delete | Delete one notification. |
 
 ## DynamoDB
 
