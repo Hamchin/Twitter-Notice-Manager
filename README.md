@@ -93,7 +93,7 @@ $ zip -r package.zip ./python
 - Use Lambda Proxy Integration.
 - Enable CORS.
 
-### /notices (GET)
+### /notices - GET
 
 #### Request
 
@@ -122,7 +122,7 @@ If `mode` is `expand`:
 | tweet | Tweet Object |
 | timestamp | Integer |
 
-### /notice/update (POST)
+### /notice/update - POST
 
 #### Request
 
@@ -139,7 +139,7 @@ If `mode` is `expand`:
 | - | - |
 | status | String |
 
-### /notice/delete (POST)
+### /notice/delete - POST
 
 #### Request
 
