@@ -77,7 +77,7 @@ $ zip -r function.zip *.py
 
 | Attribute | Content |
 | - | - |
-| Name | Requests-OAuthlib |
+| Name | OAuthLibrary |
 | Runtime | Python 3.8 |
 
 To create zip file:
