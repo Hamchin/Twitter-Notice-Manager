@@ -70,7 +70,7 @@ To create zip file:
 
 ```
 $ cd backend
-$ zip -r function.zip *.py
+$ zip -r function.zip *
 ```
 
 ## Lambda Layer
@@ -84,7 +84,7 @@ To create zip file:
 
 ```
 $ cd backend
-$ pip3 install -t ./python -r requirements.txt
+$ pip3 install -t ./python requests_oauthlib
 $ zip -r package.zip ./python
 ```
 
