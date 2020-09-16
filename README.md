@@ -83,7 +83,6 @@ $ zip -r function.zip *
 To create zip file:
 
 ```
-$ cd backend
 $ pip3 install -t ./python requests_oauthlib
 $ zip -r package.zip ./python
 ```
