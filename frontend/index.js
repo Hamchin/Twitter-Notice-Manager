@@ -53,7 +53,7 @@ const showNotice = (notice) => {
 const doMainProcess = (url) => {
     $('#URLSubmit').prop('disabled', true);
     $.ajax({
-        url: url,
+        url: url + '/notices',
         type: 'GET',
         dataType: 'json',
         data: { size: 100, mode: 'expand' }
