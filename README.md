@@ -49,6 +49,14 @@ Service for managing notifications on Twitter.
 | Memory | 128 MB |
 | Timeout | 30 seconds |
 
+### Role
+
+| Attribute | Content |
+| - | - |
+| Name | LambdaAccess2DynamoDB |
+| Policy 1 | AmazonDynamoDBFullAccess |
+| Policy 2 | AWSLambdaDynamoDBExecutionRole |
+
 ### Environmental Variable
 
 | Key |
@@ -57,14 +65,6 @@ Service for managing notifications on Twitter.
 | TWITTER_CONSUMER_SECRET |
 | TWITTER_ACCESS_TOKEN |
 | TWITTER_ACCESS_SECRET |
-
-### Role
-
-| Attribute | Content |
-| - | - |
-| Name | LambdaAccess2DynamoDB |
-| Policy 1 | AmazonDynamoDBFullAccess |
-| Policy 2 | AWSLambdaDynamoDBExecutionRole |
 
 To create zip file:
 
@@ -92,7 +92,7 @@ $ zip -r package.zip ./python
 - Use Lambda Proxy Integration.
 - Enable CORS.
 
-### /notices - GET
+### GET /notices
 
 #### Request
 
@@ -121,7 +121,7 @@ If `mode` is `expand`:
 | tweet | Tweet Object |
 | timestamp | Integer |
 
-### /notice/update - POST
+### POST /notice/update
 
 #### Request
 
@@ -138,7 +138,7 @@ If `mode` is `expand`:
 | - | - |
 | status | String |
 
-### /notice/delete - POST
+### POST /notice/delete
 
 #### Request
 
