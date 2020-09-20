@@ -94,14 +94,14 @@ $ zip -r package.zip ./python
 
 ### GET /notices
 
-#### Request
+#### Request Parameters
 
 | Key | Type |
 | - | - |
 | size | Integer |
 | mode | String |
 
-#### Response
+#### Response Body
 
 Array of notifications, each of which is:
 
@@ -123,7 +123,7 @@ If `mode` is `expand`:
 
 ### POST /notice/update
 
-#### Request
+#### Request Body
 
 | Key | Type |
 | - | - |
@@ -132,7 +132,7 @@ If `mode` is `expand`:
 | tweet_id | String |
 | timestamp | Integer |
 
-#### Response
+#### Response Body
 
 | Key | Type |
 | - | - |
@@ -140,7 +140,7 @@ If `mode` is `expand`:
 
 ### POST /notice/delete
 
-#### Request
+#### Request Body
 
 | Key | Type |
 | - | - |
@@ -148,7 +148,7 @@ If `mode` is `expand`:
 | sender_id (sender_name) | String |
 | tweet_id | String |
 
-#### Response
+#### Response Body
 
 | Key | Type |
 | - | - |
