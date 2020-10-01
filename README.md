@@ -31,14 +31,14 @@ Service for managing notifications on Twitter.
 
 ### Items
 
-| Key | Type |
-| - | - |
-| ID | String |
-| ReceiverID | String |
-| SenderID | String |
-| TweetID | String |
-| Timestamp | Integer |
-| PartitionID | Integer |
+| Key | Type | Example |
+| - | - | - |
+| ID | String | 0001-0002-1234 |
+| ReceiverID | String | 0001 |
+| SenderID | String | 0002 |
+| TweetID | String | 1234 |
+| Timestamp | Integer | 1600000000 |
+| PartitionID | Integer | 0 |
 
 ## Lambda Function
 
