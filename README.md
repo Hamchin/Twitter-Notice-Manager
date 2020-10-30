@@ -153,11 +153,3 @@ If `mode` is `expand`:
 | Key | Type |
 | - | - |
 | status | String |
-
-## GitHub Pages
-
-To deploy:
-
-```
-$ git subtree push --prefix frontend origin gh-pages
-```
