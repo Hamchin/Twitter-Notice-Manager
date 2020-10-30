@@ -1,0 +1,8 @@
+table {
+    table-layout: fixed;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
