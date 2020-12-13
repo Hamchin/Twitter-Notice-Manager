@@ -2,7 +2,20 @@ table {
     table-layout: fixed;
 }
 
+main {
+    margin: 3rem;
+    margin-top: 5.5rem;
+}
+
 a {
     text-decoration: none;
     color: inherit;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.modal-dialog {
+    max-width: 600px;
 }

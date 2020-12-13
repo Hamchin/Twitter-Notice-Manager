@@ -54,12 +54,14 @@ def lambda_handler(event, context):
     body = event.get('body')
     body = json.loads(body) if body else {}
     # 複数の通知を取得する
+    # receiver_id (receiver_name): String
     # size: Integer
     # mode: String
     if path == '/notices' and method == 'GET':
+        receiver_id = get_user_id(params, 'receiver_id', 'receiver_name')
         size = int(params.get('size') or 10)
         mode = params.get('mode') or ''
-        notices = table.query(size, mode)
+        notices = table.query(receiver_id, size, mode)
         notices = [mapping(notice) for notice in notices]
         return response(200, notices)
     # 通知を追加/更新する

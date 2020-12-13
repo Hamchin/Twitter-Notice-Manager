@@ -24,9 +24,9 @@ Service for managing notifications on Twitter.
 
 | Attribute | Content |
 | - | - |
-| Name | PartitionID-Timestamp-Index |
+| Name | ReceiverID-Timestamp-Index |
 | Type | GSI |
-| Partition Key | PartitionID (Integer) |
+| Partition Key | ReceiverID (String) |
 | Sort Key | Timestamp (Integer) |
 
 ### Items
@@ -38,7 +38,6 @@ Service for managing notifications on Twitter.
 | SenderID | String | 0002 |
 | TweetID | String | 1234 |
 | Timestamp | Integer | 1600000000 |
-| PartitionID | Integer | 0 |
 
 ## Lambda Function
 
@@ -98,6 +97,7 @@ $ zip -r package.zip ./python
 
 | Key | Type |
 | - | - |
+| receiver_id <br> (receiver_name) | String |
 | size | Integer |
 | mode | String |
 
@@ -127,8 +127,8 @@ If `mode` is `expand`:
 
 | Key | Type |
 | - | - |
-| receiver_id (receiver_name) | String |
-| sender_id (sender_name) | String |
+| receiver_id <br> (receiver_name) | String |
+| sender_id <br> (sender_name) | String |
 | tweet_id | String |
 | timestamp | Integer |
 
@@ -144,8 +144,8 @@ If `mode` is `expand`:
 
 | Key | Type |
 | - | - |
-| receiver_id (receiver_name) | String |
-| sender_id (sender_name) | String |
+| receiver_id <br> (receiver_name) | String |
+| sender_id <br> (sender_name) | String |
 | tweet_id | String |
 
 #### Response Body

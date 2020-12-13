@@ -50,33 +50,43 @@ const showNotice = (notice) => {
 };
 
 // メイン処理
-const doMainProcess = (url) => {
-    $('#URLSubmit').prop('disabled', true);
+const main = (noticeUrl, receiverId) => {
     $.ajax({
-        url: url + '/notices',
+        url: noticeUrl + '/notices',
         type: 'GET',
         dataType: 'json',
-        data: { size: 100, mode: 'expand' }
+        data: { receiver_id: receiverId, size: 100, mode: 'expand' }
     })
     .then(
-        notices => notices.forEach((notice) => showNotice(notice)),
+        notices => {
+            $('table').removeClass('d-none');
+            $('tbody').empty();
+            notices.forEach((notice) => showNotice(notice));
+        },
         error => console.error(error)
-    )
-    .then(
-        () => $('#URLSubmit').prop('disabled', false)
     );
 };
 
-// ロード
+// ロードイベント
 $(document).ready(() => {
-    const url = localStorage.getItem('NOTICE_API_URL');
-    if (url) doMainProcess(url);
+    const noticeUrl = localStorage.getItem('NOTICE_API_URL');
+    const receiverId = localStorage.getItem('RECEIVER_ID');
+    if (noticeUrl && receiverId) main(noticeUrl, receiverId);
 });
 
-// クリックイベント on 更新ボタン
-$(document).on('click', '#URLSubmit', () => {
-    const url = $('#URLInput').val();
-    $('#URLInput').val('');
-    localStorage.setItem('NOTICE_API_URL', url);
-    doMainProcess(url);
+// クリックイベント: 設定ボタン
+$(document).on('click', '#setting', () => {
+    const noticeUrl = localStorage.getItem('NOTICE_API_URL');
+    const receiverId = localStorage.getItem('RECEIVER_ID');
+    $('#noticeUrl').val(noticeUrl);
+    $('#receiverId').val(receiverId);
+});
+
+// クリックイベント: 更新ボタン
+$(document).on('click', '#update', () => {
+    const noticeUrl = $('#noticeUrl').val();
+    const receiverId = $('#receiverId').val();
+    localStorage.setItem('NOTICE_API_URL', noticeUrl);
+    localStorage.setItem('RECEIVER_ID', receiverId);
+    main(noticeUrl, receiverId);
 });
