@@ -33,11 +33,11 @@ Service for managing notifications on Twitter.
 
 | Key | Type | Example |
 | - | - | - |
-| ID | String | 0001-0002-1234 |
+| ID | String | 0001-0002-8888 |
 | ReceiverID | String | 0001 |
 | SenderID | String | 0002 |
-| TweetID | String | 1234 |
-| Timestamp | Integer | 1600000000 |
+| TweetID | String | 8888 |
+| Timestamp | Integer | 12345678 |
 
 ## Lambda Function
 
