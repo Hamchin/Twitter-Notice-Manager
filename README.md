@@ -65,26 +65,12 @@ Service for managing notifications on Twitter.
 | TWITTER_ACCESS_TOKEN |
 | TWITTER_ACCESS_SECRET |
 
-To create zip file:
-
-```
-$ cd backend
-$ zip -r function.zip *
-```
-
 ## Lambda Layer
 
 | Attribute | Content |
 | - | - |
 | Name | OAuthLibrary |
 | Runtime | Python 3.8 |
-
-To create zip file:
-
-```
-$ pip3 install -t ./python requests_oauthlib
-$ zip -r package.zip ./python
-```
 
 ## API Gateway
 
