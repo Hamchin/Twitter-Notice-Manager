@@ -14,15 +14,15 @@ const getTweetCell = (tweet) => {
     const shorten = (text) => text.replace(/https:[^\s]+$/, '').trim();
     const tweetId = tweet ? tweet.id_str : '';
     const text = tweet ? shorten(tweet.text) : '';
-    const tweetCell = $('<td>', { class: 'text-truncate' });
     const link = `https://twitter.com/Twitter/status/${tweetId}`;
+    const tweetCell = $('<td>', { class: 'text-truncate' });
     const anchor = $('<a>', { href: link, target: '_blank', text: text });
     $(tweetCell).append(anchor);
     return tweetCell;
 };
 
 // 日時のテーブルセルを取得する
-const getTimeCell = (timestamp) => {
+const getTimeCell = (timestamp, tweet) => {
     const getDateString = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, 0);
@@ -33,8 +33,10 @@ const getTimeCell = (timestamp) => {
     };
     const dateTime = new Date(timestamp * 1000);
     const dateString = getDateString(dateTime);
+    const tweetId = tweet ? tweet.id_str : '';
+    const link = `https://twitter.com/Twitter/status/${tweetId}`;
     const timeCell = $('<td>', { class: 'text-truncate' });
-    const anchor = $('<a>', { text: dateString });
+    const anchor = $('<a>', { href: link, target: '_blank', text: dateString });
     $(timeCell).append(anchor);
     return timeCell;
 };
@@ -45,7 +47,7 @@ const showNotice = (notice) => {
     $(tableRow).append(getUserCell(notice.receiver));
     $(tableRow).append(getUserCell(notice.sender));
     $(tableRow).append(getTweetCell(notice.tweet));
-    $(tableRow).append(getTimeCell(notice.timestamp));
+    $(tableRow).append(getTimeCell(notice.timestamp, notice.tweet));
     $('tbody').append(tableRow);
 };
 
