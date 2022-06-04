@@ -3,7 +3,7 @@ const getUserCell = (user) => {
     const name = user ? user.name : '';
     const screenName = user ? user.screen_name : '';
     const userCell = $('<td>', { class: 'text-truncate' });
-    const link = `https://twitter.com/${screenName}`;
+    const link = screenName ? `https://twitter.com/${screenName}` : '';
     const anchor = $('<a>', { href: link, target: '_blank', text: name });
     $(userCell).append(anchor);
     return userCell;
@@ -14,7 +14,7 @@ const getTweetCell = (tweet) => {
     const shorten = (text) => text.replace(/https:[^\s]+$/, '').trim();
     const tweetId = tweet ? tweet.id_str : '';
     const text = tweet ? shorten(tweet.text) : '';
-    const link = `https://twitter.com/Twitter/status/${tweetId}`;
+    const link = tweetId ? `https://twitter.com/Twitter/status/${tweetId}` : '';
     const tweetCell = $('<td>', { class: 'text-truncate' });
     const anchor = $('<a>', { href: link, target: '_blank', text: text });
     $(tweetCell).append(anchor);
@@ -34,7 +34,7 @@ const getTimeCell = (timestamp, tweet) => {
     const dateTime = new Date(timestamp * 1000);
     const dateString = getDateString(dateTime);
     const tweetId = tweet ? tweet.id_str : '';
-    const link = `https://twitter.com/Twitter/status/${tweetId}`;
+    const link = tweetId ? `https://twitter.com/Twitter/status/${tweetId}` : '';
     const timeCell = $('<td>', { class: 'text-truncate' });
     const anchor = $('<a>', { href: link, target: '_blank', text: dateString });
     $(timeCell).append(anchor);
